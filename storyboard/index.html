@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#121316">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Slate">
+<title>Slate storyboard</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
+<style>
+/* VOICE: a crew tool, confident and quiet, like gear in a camera bag.
+   IDEA: the clapperboard slate and the contact sheet: shots as numbered frames.
+   PICTURE: the storyboard itself, 16:9 frames with chalk-white slate labels.
+   COLOUR and TYPE: charcoal ground, chalk white, one record-red accent; Archivo wide for titles, condensed for labels.
+   LAYOUT: top bar, scene bands, frame grid; on phones one column of frames and a full-screen shot editor. */
+:root{color-scheme:dark;
+--bg:light-dark(#f3f2ee,#121316);--panel:light-dark(#ffffff,#1c1e22);--panel2:light-dark(#e8e6e0,#26292e);
+--ink:light-dark(#141518,#f2f0ea);--mute:light-dark(#5d5f66,#9a9ca3);--line:light-dark(#d6d3cb,#33363c);
+--rec:#e5322d;--rec-ink:#fff;--ok:light-dark(#1f7a4d,#5fd39a);--frame:light-dark(#dcd9d1,#0b0c0e)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 Archivo,system-ui,-apple-system,"Segoe UI",sans-serif;overflow-x:clip;
+padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--rec);outline-offset:2px}
+.wrap{max-width:1240px;margin:0 auto;padding:0 max(3vw,14px)}
+h1,h2,h3{font-stretch:112%;line-height:1.05;margin:0;text-wrap:balance}
+h1{font-size:clamp(28px,5vw,44px);font-weight:850}
+h2{font-size:20px;font-weight:800}
+.lbl{font-stretch:75%;font-weight:700;font-size:13px;color:var(--mute)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border-radius:10px;border:1px solid var(--line);background:var(--panel);font-weight:650;white-space:nowrap}
+.btn:hover{border-color:var(--mute)}
+.btn.rec{background:var(--rec);color:var(--rec-ink);border-color:var(--rec)}
+.btn.ghost{background:transparent}
+.btn.sm{min-height:36px;padding:0 12px;font-size:14px}
+.btn.icon{width:44px;padding:0}
+.btn svg{width:20px;height:20px;flex:none}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.sp{flex:1}
+input[type=text],textarea,select{width:100%;min-height:44px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);font-size:16px}
+textarea{min-height:76px;resize:vertical}
+.hide{display:none!important}
+
+/* top bar */
+.top{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:10px;min-height:60px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;font-stretch:125%;font-size:20px;letter-spacing:-.01em;background:none;border:0;padding:0;min-height:44px}
+.brand i{width:28px;height:22px;border-radius:3px;background:repeating-linear-gradient(-45deg,var(--ink) 0 5px,transparent 5px 10px);border:2px solid var(--ink);display:block}
+
+/* home */
+.hero{padding:clamp(24px,5vw,56px) 0 20px}
+.hero p{color:var(--mute);max-width:56ch;margin:10px 0 0}
+.plist{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,280px),1fr));gap:16px;padding-bottom:48px}
+.pcard{background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden;text-align:left;padding:0;display:flex;flex-direction:column}
+.pcard .strip{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:var(--frame);aspect-ratio:16/5}
+.pcard .strip div{background:var(--frame) center/cover no-repeat}
+.pcard .info{padding:14px 16px}
+.pcard b{font-size:18px;font-stretch:110%;display:block}
+.new{border-style:dashed;align-items:center;justify-content:center;min-height:180px;font-weight:700;gap:6px;color:var(--mute)}
+
+/* project */
+.phead{padding:16px 0 8px;display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.phead .t{flex:1 1 300px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-top:10px;overflow-x:auto}
+.tab{background:none;border:0;border-bottom:3px solid transparent;min-height:46px;padding:0 14px;font-weight:700;color:var(--mute);white-space:nowrap}
+.tab[aria-selected=true]{color:var(--ink);border-color:var(--rec)}
+.bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;padding:14px 0}
+.bar select{width:auto;min-width:160px}
+.prog{font-weight:650;color:var(--mute);font-size:14px}
+
+.scene{margin:8px 0 30px}
+.shead{display:flex;gap:12px;align-items:center;padding:12px 0;border-top:2px solid var(--ink);flex-wrap:wrap}
+.snum{background:var(--ink);color:var(--bg);font-weight:900;font-stretch:125%;min-width:44px;height:44px;border-radius:8px;display:grid;place-items:center;font-size:18px;padding:0 8px}
+.shead .h{flex:1 1 220px}
+.shead .h b{line-height:1.2;font-stretch:90%;font-weight:800;font-size:17px;text-transform:uppercase;letter-spacing:.02em;display:block}
+.shead .h span{color:var(--mute);font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr));gap:16px}
+.shot{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;text-align:left;padding:0;position:relative}
+.shot.done{opacity:.62}
+.fr{aspect-ratio:16/9;background:var(--frame) center/cover no-repeat;position:relative;display:grid;place-items:center;color:var(--mute)}
+.fr .ph{font-stretch:125%;font-weight:900;font-size:30px;opacity:.45}
+.tag{position:absolute;left:8px;top:8px;background:#000c;color:#fff;font-weight:900;font-stretch:115%;font-size:14px;padding:3px 8px;border-radius:5px}
+.tick{position:absolute;right:8px;top:8px;background:var(--ok);color:#fff;font-size:12px;font-weight:800;padding:3px 8px;border-radius:5px}
+.shot .meta{padding:10px 12px 12px;display:flex;flex-direction:column;gap:6px}
+.chips{display:flex;gap:5px;flex-wrap:wrap}
+.chip{font-size:13px;font-weight:700;font-stretch:85%;padding:2px 8px;border-radius:99px;background:var(--panel2);white-space:nowrap}
+.chip.who{background:transparent;border:1px solid var(--line)}
+.shot p{margin:0;font-size:14.5px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.addshot{border:2px dashed var(--line);background:transparent;border-radius:12px;min-height:120px;font-weight:700;color:var(--mute)}
+.empty{padding:40px 0;color:var(--mute);text-align:center}
+
+/* list view */
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{text-align:left;font-stretch:80%;color:var(--mute);font-weight:700;font-size:13px;padding:8px;border-bottom:2px solid var(--ink)}
+td{padding:9px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+tr.sc td{background:var(--panel2);font-weight:800;font-stretch:90%;text-transform:uppercase}
+tr.click{cursor:pointer}tr.click:hover td{background:var(--panel)}
+td.n{font-weight:900;white-space:nowrap}
+td input[type=checkbox]{width:22px;height:22px;accent-color:var(--ok)}
+.thumb{width:72px;aspect-ratio:16/9;border-radius:4px;background:var(--frame) center/cover no-repeat}
+@media(max-width:600px){table{font-size:14px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:7em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:6.5em;margin-inline-start:-7em;color:var(--mute);font-size:13px}.stack td:empty{display:none}.stack tr.sc td{padding-inline-start:8px}.stack tr.sc td::before{display:none}}
+
+/* crew */
+.crew{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:14px;padding-bottom:40px}
+.mem{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.mem ul{margin:8px 0 0;padding-left:18px;font-size:14px;color:var(--mute)}
+
+/* sheet / dialogs */
+.dim{position:fixed;inset:0;background:#000a;z-index:50;display:flex;align-items:flex-end;justify-content:center}
+@media(min-width:700px){.dim{align-items:center;padding:24px}}
+.sheet{background:var(--panel);width:100%;max-width:760px;max-height:100dvh;overflow:auto;border-radius:16px 16px 0 0;padding:0 0 calc(20px + env(safe-area-inset-bottom))}
+@media(min-width:700px){.sheet{border-radius:16px;max-height:calc(100dvh - 48px)}}
+.sheet.small{max-width:460px}
+.shd{position:sticky;top:0;background:var(--panel);display:flex;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--line);z-index:2}
+.sbd{padding:16px;display:grid;gap:16px}
+.field{display:grid;gap:6px}
+.pick{display:flex;gap:6px;flex-wrap:wrap}
+.pick button{min-height:40px;padding:0 12px;border-radius:99px;border:1px solid var(--line);background:var(--bg);font-weight:650;font-size:14px}
+.pick button[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.pick button small{font-weight:500;opacity:.7;margin-left:4px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:12px}
+.edfr{border-radius:10px;overflow:hidden}
+.toggle{display:flex;align-items:center;gap:10px;min-height:44px;font-weight:650}
+.toggle input{width:24px;height:24px;accent-color:var(--ok)}
+
+/* sketch */
+.skwrap{background:#fff;border-radius:8px;overflow:hidden;position:relative;touch-action:none;aspect-ratio:16/9}
+.skwrap canvas{width:100%;height:100%;display:block}
+.thirds{position:absolute;inset:0;pointer-events:none;background:
+linear-gradient(90deg,transparent calc(33.33% - .5px),#e5322d66 0 calc(33.33% + .5px),transparent 0 calc(66.66% - .5px),#e5322d66 0 calc(66.66% + .5px),transparent 0),
+linear-gradient(transparent calc(33.33% - .5px),#e5322d66 0 calc(33.33% + .5px),transparent 0 calc(66.66% - .5px),#e5322d66 0 calc(66.66% + .5px),transparent 0)}
+.tools{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.tools button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 12px 10px 18px;border-radius:12px;z-index:80;display:flex;gap:12px;align-items:center;font-weight:600;max-width:calc(100vw - 24px)}
+.toast button{background:none;border:0;color:var(--rec);font-weight:800;min-height:36px}
+.menu{display:grid;gap:8px}
+.menu .btn{justify-content:flex-start}
+.note{font-size:14px;color:var(--mute);margin:0}
+
+/* print */
+#print{display:none}
+@media print{
+ body{background:#fff;color:#000;padding:0}
+ body>*:not(#print){display:none!important}
+ #print{display:block;font:11pt/1.35 Archivo,Arial,sans-serif;color:#000}
+ #print h1{font-size:20pt;margin:0 0 2pt}
+ #print .sub{margin:0 0 10pt;color:#444}
+ #print table{font-size:9.5pt}
+ #print th{color:#000;border-bottom:1.5pt solid #000}
+ #print td{border-bottom:.5pt solid #999}
+ #print tr.sc td{background:#eee}
+ #print tr{break-inside:avoid}
+ .pboard{display:grid;grid-template-columns:1fr 1fr;gap:12pt}
+ .pcell{break-inside:avoid;border:.6pt solid #000;padding:5pt}
+ .pcell .pf{-webkit-print-color-adjust:exact;print-color-adjust:exact;aspect-ratio:16/9;border:.5pt solid #999;background:#fff center/cover no-repeat;margin-bottom:4pt}
+ .pcell b{font-size:11pt}
+ .pcell p{margin:2pt 0 0;font-size:9pt}
+ .psc{grid-column:1/-1;font-weight:800;text-transform:uppercase;border-top:1.5pt solid #000;padding-top:4pt;margin-top:4pt;break-after:avoid}
+ @page{margin:12mm}
+}
+@media(max-width:600px){#editP,#tPrint{display:none}.phead{padding-top:10px}.shead .h{flex-basis:140px}.bar select{min-width:0;flex:1 1 100%}.prog{flex:1}}
+@media(prefers-reduced-motion:no-preference){.shot,.pcard{transition:transform .15s}.shot:hover,.pcard:hover{transform:translateY(-2px)}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+ <button class="brand" id="home" aria-label="All films"><i></i>Slate</button>
+ <span class="sp"></span>
+ <span id="topR" class="row"></span>
+</div></header>
+<main id="app" class="wrap"></main>
+<div id="print"></div>
+<input type="file" id="fileImg" accept="image/*" class="hide">
+<input type="file" id="fileProj" accept=".json,.slate,application/json" class="hide">
+
+<script>
+{
+/* ---------- vocab ---------- */
+const SIZES=[["EWS","extreme wide"],["WS","wide"],["MWS","medium wide"],["MS","medium"],["MCU","medium close-up"],["CU","close-up"],["ECU","extreme close-up"],["OTS","over the shoulder"],["POV","point of view"],["2S","two-shot"],["INS","insert"]];
+const ANGLES=["Eye level","High","Low","Bird's eye","Worm's eye","Dutch"];
+const MOVES=["Static","Pan","Tilt","Dolly in","Dolly out","Tracking","Handheld","Gimbal","Zoom","Crane / drone"];
+const ROLES=["Director","Camera","Sound","Lighting","Actor","Editor","Producer","Art / props"];
+const SL=Object.fromEntries(SIZES);
+
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid=()=>Math.random().toString(36).slice(2,10)+Date.now().toString(36).slice(-4);
+const ic={
+ plus:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+ x:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+ dots:'<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg>',
+ up:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 15l6-6 6 6"/></svg>',
+ down:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>',
+ back:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>'
+};
+
+/* ---------- storage (IndexedDB, falls back to memory) ---------- */
+let db=null;const mem={};
+function openDB(){return new Promise(res=>{try{const r=indexedDB.open('slate',1);r.onupgradeneeded=()=>r.result.createObjectStore('p',{keyPath:'id'});r.onsuccess=()=>{db=r.result;res()};r.onerror=()=>res()}catch(e){res()}})}
+function tx(mode){return db.transaction('p',mode).objectStore('p')}
+function allP(){if(!db)return Promise.resolve(Object.values(mem));return new Promise(res=>{const r=tx('readonly').getAll();r.onsuccess=()=>res(r.result);r.onerror=()=>res([])})}
+function putP(p){p.updated=Date.now();if(!db){mem[p.id]=p;return Promise.resolve()}return new Promise(res=>{const r=tx('readwrite').put(p);r.onsuccess=r.onerror=()=>res()})}
+function delP(id){if(!db){delete mem[id];return Promise.resolve()}return new Promise(res=>{const r=tx('readwrite').delete(id);r.onsuccess=r.onerror=()=>res()})}
+
+/* ---------- state ---------- */
+let projects=[],cur=null,view='board',who='';
+let saveT=null;
+const save=()=>{clearTimeout(saveT);saveT=setTimeout(()=>putP(cur),250)};
+const pref={get(k){try{return localStorage.getItem('slate.'+k)}catch(e){return null}},set(k,v){try{localStorage.setItem('slate.'+k,v)}catch(e){}}};
+
+function newShot(){return{id:uid(),size:'MS',angle:'Eye level',move:'Static',lens:'',action:'',dialogue:'',sound:'',crew:[],done:false,img:null}}
+function newScene(){return{id:uid(),ie:'INT.',place:'',time:'DAY',notes:'',shots:[newShot()]}}
+function newProject(title){return{id:uid(),title:title||'Untitled film',logline:'',crew:[],scenes:[newScene()],created:Date.now(),updated:Date.now()}}
+
+function sample(){
+ const c=[{id:uid(),name:'Ben',role:'Director'},{id:uid(),name:'Mia',role:'Camera'},{id:uid(),name:'Karl',role:'Sound'},{id:uid(),name:'Lena',role:'Actor'}];
+ const S=(size,angle,move,action,extra={})=>Object.assign({id:uid(),size,angle,move,lens:'',action,dialogue:'',sound:'',crew:[c[1].id],done:false,img:demoSketch(size,angle==='Dutch')},extra);
+ return{id:uid(),title:'Last Bus (sample)',logline:'A girl misses the last bus and finds out the driver was waiting for her.',crew:c,created:Date.now(),updated:Date.now(),
+ scenes:[
+  {id:uid(),ie:'EXT.',place:'Bus stop',time:'NIGHT',notes:'Streetlight only. Bring the LED panel just in case.',shots:[
+   S('EWS','High','Static','Empty street, one streetlight, bus stop in the far corner.',{lens:'24mm',sound:'Room tone, wind'}),
+   S('MS','Eye level','Handheld','Lena runs in, out of breath, checks the timetable.',{sound:'Footsteps',crew:[c[1].id,c[2].id]}),
+   S('ECU','Eye level','Static','Her phone: 23:58. Battery 2%.',{lens:'50mm macro'}),
+   S('OTS','Low','Dolly in','Headlights grow behind her. She turns.',{dialogue:'LENA: You waited?'})]},
+  {id:uid(),ie:'INT.',place:'Bus',time:'NIGHT',notes:'',shots:[
+   S('2S','Eye level','Gimbal','Lena sits down. The driver nods in the mirror.',{dialogue:'DRIVER: Every night.'}),
+   S('CU','Dutch','Static','Mirror reflection of the driver smiling.',{img:null})]}]};
+}
+
+/* sample sketches: a quick pencil figure scaled to the shot size */
+function demoSketch(size,dutch){
+ const c=document.createElement('canvas');c.width=640;c.height=360;const x=c.getContext('2d');
+ x.fillStyle='#fff';x.fillRect(0,0,640,360);x.strokeStyle='#1b1b1b';x.lineCap=x.lineJoin='round';
+ if(dutch){x.translate(320,180);x.rotate(-.2);x.translate(-320,-180)}
+ const k={EWS:.35,WS:.6,MS:1.6,OTS:1.9,'2S':1.3,CU:3.4,ECU:6}[size]||1;
+ if(k<2){x.lineWidth=2;x.beginPath();x.moveTo(-40,250);x.lineTo(680,250);x.stroke()}
+ if(size==='EWS'){x.beginPath();x.moveTo(470,250);x.lineTo(470,120);x.lineTo(500,120);x.stroke();x.beginPath();x.arc(500,128,9,0,7);x.stroke();x.strokeRect(540,200,40,50)}
+ if(size==='ECU'){x.lineWidth=4;x.strokeRect(220,60,200,250);x.strokeRect(236,84,168,190);x.font='bold 46px Archivo,sans-serif';x.fillStyle='#1b1b1b';x.fillText('23:58',262,190);return c.toDataURL('image/jpeg',.8)}
+ const fig=(cx,base,h)=>{x.lineWidth=Math.max(2,h/40);const r=h*.12;x.beginPath();x.arc(cx,base-h+r,r,0,7);x.stroke();x.beginPath();x.moveTo(cx,base-h+2*r);x.lineTo(cx,base-h*.45);x.moveTo(cx-h*.18,base-h*.68);x.lineTo(cx,base-h*.75);x.lineTo(cx+h*.18,base-h*.6);x.moveTo(cx,base-h*.45);x.lineTo(cx-h*.12,base);x.moveTo(cx,base-h*.45);x.lineTo(cx+h*.12,base);x.stroke()};
+ const h=110*k;
+ if(size==='2S'){fig(230,250+h*.3,h);fig(430,250+h*.3,h*.95)}
+ else if(size==='OTS'){fig(380,250+h*.1,h*.7);x.fillStyle='#1b1b1b';x.beginPath();x.ellipse(120,330,150,190,0,0,7);x.fill();x.strokeStyle='#e5322d';x.lineWidth=5;x.beginPath();x.moveTo(560,330);x.lineTo(470,280);x.stroke()}
+ else fig(size==='EWS'?300:320,250+(k>1?h*.35:0),h);
+ if(size==='MS'){x.strokeStyle='#e5322d';x.lineWidth=5;x.beginPath();x.moveTo(60,300);x.lineTo(200,300);x.lineTo(185,288);x.moveTo(200,300);x.lineTo(185,312);x.stroke()}
+ return c.toDataURL('image/jpeg',.8);
+}
+
+/* ---------- top bar ---------- */
+function topBar(){
+ $('#topR').innerHTML=cur?`<button class="btn sm" id="tShare">Share</button><button class="btn sm" id="tPrint">Print / PDF</button><button class="btn icon sm" id="tMore" aria-label="More">${ic.dots}</button>`
+ :`<button class="btn sm ghost" id="tImport">Open file</button>`;
+}
+
+/* ---------- home ---------- */
+async function showHome(){
+ cur=null;topBar();
+ projects=(await allP()).sort((a,b)=>b.updated-a.updated);
+ const frames=p=>{const imgs=p.scenes.flatMap(s=>s.shots).filter(s=>s.img).slice(0,3);return [0,1,2].map(i=>`<div style="${imgs[i]?`background-image:url(${imgs[i].img})`:''}"></div>`).join('')};
+ const count=p=>p.scenes.reduce((n,s)=>n+s.shots.length,0);
+ $('#app').innerHTML=`<section class="hero"><h1>Plan the shoot.<br>Know every shot.</h1>
+ <p>Scenes, shots, sketches and who films what. Everything stays on this device. Share a film with your crew as a file.</p></section>
+ <div class="plist">
+ <button class="pcard new" id="newP">${ic.plus.replace('<svg','<svg width="28" height="28"')}New film</button>
+ ${projects.map(p=>`<button class="pcard" data-open="${esc(p.id)}"><div class="strip">${frames(p)}</div><div class="info"><b>${esc(p.title)}</b>
+ <span class="lbl">${p.scenes.length} scene${p.scenes.length==1?'':'s'} · ${count(p)} shot${count(p)==1?'':'s'}</span></div></button>`).join('')}
+ </div>`;
+ location.hash='';
+}
+async function openProject(id){
+ cur=projects.find(p=>p.id===id)||(await allP()).find(p=>p.id===id);if(!cur)return showHome();
+ view=pref.get('view')||'board';who='';pref.set('last',cur.id);render();window.scrollTo(0,0);
+}
+
+/* ---------- project ---------- */
+const shotNo=(si,hi)=>`${si+1}${String.fromCharCode(65+hi%26)}${hi>=26?Math.floor(hi/26):''}`;
+const crewName=id=>cur.crew.find(c=>c.id===id)?.name||'';
+const heading=s=>[s.ie,s.place||'Somewhere',s.time&&('— '+s.time)].filter(Boolean).join(' ');
+function visible(sh){return !who||sh.crew.includes(who)}
+
+function render(){
+ topBar();
+ const all=cur.scenes.flatMap(s=>s.shots),done=all.filter(s=>s.done).length;
+ $('#app').innerHTML=`<div class="phead"><div class="t"><button class="btn sm ghost" id="back" style="margin-left:-8px">${ic.back} All films</button>
+ <h1 id="ptitle">${esc(cur.title)}</h1>${cur.logline?`<p class="note" style="margin-top:6px">${esc(cur.logline)}</p>`:''}</div>
+ <button class="btn sm" id="editP">Edit details</button></div>
+ <div class="tabs" role="tablist">${[['board','Storyboard'],['list','Shot list'],['crew','Crew']].map(([k,l])=>`<button class="tab" role="tab" data-view="${k}" aria-selected="${view==k}">${l}</button>`).join('')}</div>
+ ${view!=='crew'?`<div class="bar"><select id="who" aria-label="Show shots for">${'<option value="">Everyone\'s shots</option>'+cur.crew.map(c=>`<option value="${esc(c.id)}"${who==c.id?' selected':''}>${esc(c.name)}'s shots</option>`).join('')}</select>
+ <span class="prog">${done} of ${all.length} shots in the can</span><span class="sp"></span><button class="btn sm rec" id="addScene">${ic.plus}Scene</button></div>`:''}
+ <div id="body"></div>`;
+ ({board:renderBoard,list:renderList,crew:renderCrew})[view]();
+ location.hash='film-'+cur.id;
+}
+
+function shotCard(sc,si,sh,hi){
+ const cr=sh.crew.map(crewName).filter(Boolean);
+ return `<button class="shot${sh.done?' done':''}" data-shot="${esc(sh.id)}" data-scene="${esc(sc.id)}">
+ <div class="fr" style="${sh.img?`background-image:url(${sh.img})`:''}">${sh.img?'':`<span class="ph">${esc(sh.size)}</span>`}<span class="tag">${shotNo(si,hi)}</span>${sh.done?'<span class="tick">Shot</span>':''}</div>
+ <div class="meta"><div class="chips"><span class="chip">${esc(sh.size)}</span><span class="chip">${esc(sh.angle)}</span><span class="chip">${esc(sh.move)}</span>${sh.lens?`<span class="chip">${esc(sh.lens)}</span>`:''}</div>
+ ${sh.action?`<p>${esc(sh.action)}</p>`:'<p class="note">No description yet</p>'}
+ ${cr.length?`<div class="chips">${cr.map(n=>`<span class="chip who">${esc(n)}</span>`).join('')}</div>`:''}</div></button>`;
+}
+function sceneHead(sc,si){
+ return `<div class="shead"><span class="snum">${si+1}</span><div class="h"><b>${esc(heading(sc))}</b>${sc.notes?`<span>${esc(sc.notes)}</span>`:''}</div>
+ <button class="btn sm" data-escene="${esc(sc.id)}">Edit scene</button></div>`;
+}
+function renderBoard(){
+ if(!cur.scenes.length){$('#body').innerHTML='<p class="empty">No scenes yet. Add your first scene.</p>';return}
+ $('#body').innerHTML=cur.scenes.map((sc,si)=>{
+  const shots=sc.shots.map((sh,hi)=>visible(sh)?shotCard(sc,si,sh,hi):'').join('');
+  return `<section class="scene">${sceneHead(sc,si)}<div class="grid">${shots}${who?'':`<button class="addshot" data-addshot="${esc(sc.id)}">+ Add shot</button>`}</div></section>`}).join('');
+}
+function renderList(){
+ const rows=cur.scenes.map((sc,si)=>`<tr class="sc"><td colspan="9">${si+1}. ${esc(heading(sc))}</td></tr>`+sc.shots.map((sh,hi)=>visible(sh)?`<tr class="click" data-shot="${esc(sh.id)}" data-scene="${esc(sc.id)}">
+ <td class="n" data-l="Shot">${shotNo(si,hi)}</td><td data-l="Frame">${sh.img?`<div class="thumb" style="background-image:url(${sh.img})"></div>`:''}</td><td data-l="Size">${esc(sh.size)}</td><td data-l="Angle">${esc(sh.angle)}</td><td data-l="Movement">${esc(sh.move)}${sh.lens?', '+esc(sh.lens):''}</td>
+ <td data-l="What we see">${esc(sh.action)}${sh.dialogue?`<br><i>${esc(sh.dialogue)}</i>`:''}</td><td data-l="Sound">${esc(sh.sound)}</td><td data-l="Who">${esc(sh.crew.map(crewName).filter(Boolean).join(', '))}</td>
+ <td data-l="Done"><input type="checkbox" data-done="${esc(sh.id)}" ${sh.done?'checked':''} aria-label="Shot ${shotNo(si,hi)} done"></td></tr>`:'').join('')).join('');
+ $('#body').innerHTML=`<table class="stack"><thead><tr><th>#</th><th>Frame</th><th>Size</th><th>Angle</th><th>Movement</th><th>What we see</th><th>Sound</th><th>Who</th><th>Done</th></tr></thead><tbody>${rows}</tbody></table><div style="height:40px"></div>`;
+}
+function renderCrew(){
+ const list=c=>{const out=[];cur.scenes.forEach((sc,si)=>sc.shots.forEach((sh,hi)=>{if(sh.crew.includes(c.id))out.push(`${shotNo(si,hi)} ${sh.size}${sh.action?' · '+sh.action.slice(0,48):''}`)}));return out};
+ $('#body').innerHTML=`<div class="bar"><span class="note">Add the people in your crew, then tag them on shots. Each person can filter to just their shots.</span><span class="sp"></span><button class="btn sm rec" id="addCrew">${ic.plus}Person</button></div>
+ <div class="crew">${cur.crew.map(c=>{const l=list(c);return `<div class="mem"><div class="row"><div class="sp"><b>${esc(c.name)}</b><div class="lbl">${esc(c.role||'Crew')} · ${l.length} shot${l.length==1?'':'s'}</div></div><button class="btn sm" data-ecrew="${esc(c.id)}">Edit</button></div>
+ ${l.length?`<ul>${l.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}</div>`}).join('')||'<p class="note">Nobody here yet.</p>'}</div>`;
+}
+
+/* ---------- dialogs ---------- */
+function sheet(title,body,{small=false,onClose}={}){
+ const d=document.createElement('div');d.className='dim';
+ d.innerHTML=`<div class="sheet${small?' small':''}" role="dialog" aria-modal="true" aria-label="${esc(title)}"><div class="shd"><h2 class="sp">${esc(title)}</h2><button class="btn icon ghost" data-x aria-label="Close">${ic.x}</button></div><div class="sbd">${body}</div></div>`;
+ const close=()=>{d.remove();document.removeEventListener('keydown',k);onClose&&onClose()};
+ const k=e=>{if(e.key==='Escape'&&d===[...document.querySelectorAll('.dim')].pop())close()};
+ d.addEventListener('click',e=>{if(e.target===d||e.target.closest('[data-x]'))close()});
+ document.addEventListener('keydown',k);document.body.appendChild(d);
+ setTimeout(()=>d.querySelector('input[type=text],textarea')?.focus({preventScroll:true}),30);
+ d.close=close;return d;
+}
+function ask(title,text,okLabel,cb){
+ const d=sheet(title,`<p style="margin:0">${esc(text)}</p><div class="row"><span class="sp"></span><button class="btn" data-x>Cancel</button><button class="btn rec" id="okA">${esc(okLabel)}</button></div>`,{small:true});
+ d.querySelector('#okA').onclick=()=>{d.close();cb()};
+}
+let toastT;
+function toast(msg,undo){
+ document.querySelector('.toast')?.remove();clearTimeout(toastT);
+ const t=document.createElement('div');t.className='toast';t.setAttribute('role','status');
+ t.innerHTML=`<span>${esc(msg)}</span>${undo?'<button>Undo</button>':''}`;
+ if(undo)t.querySelector('button').onclick=()=>{undo();t.remove()};
+ document.body.appendChild(t);toastT=setTimeout(()=>t.remove(),5000);
+}
+const pick=(name,opts,val)=>`<div class="pick" data-pick="${name}">${opts.map(o=>{const[v,l]=Array.isArray(o)?o:[o];return `<button type="button" data-v="${esc(v)}" aria-pressed="${v===val}">${esc(v)}${l?`<small>${esc(l)}</small>`:''}</button>`}).join('')}</div>`;
+function wirePick(root,name,cb){root.querySelector(`[data-pick="${name}"]`).addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;root.querySelectorAll(`[data-pick="${name}"] button`).forEach(x=>x.setAttribute('aria-pressed',x===b));cb(b.dataset.v)})}
+
+/* project details */
+function editProject(isNew){
+ const d=sheet(isNew?'New film':'Film details',`<label class="field"><span class="lbl">Title</span><input type="text" id="pT" value="${esc(isNew?'':cur.title)}" placeholder="e.g. Last Bus"></label>
+ <label class="field"><span class="lbl">One-line story (logline)</span><textarea id="pL" placeholder="Who wants what, and what's in the way?">${esc(isNew?'':cur.logline)}</textarea></label>
+ <div class="row">${isNew?'':`<button class="btn ghost" id="pDel" style="color:var(--rec)">Delete film</button>`}<span class="sp"></span><button class="btn rec" id="pOk">${isNew?'Create':'Save'}</button></div>`,{small:true});
+ d.querySelector('#pOk').onclick=async()=>{
+  const t=d.querySelector('#pT').value.trim(),l=d.querySelector('#pL').value.trim();
+  if(isNew){const p=newProject(t);p.logline=l;await putP(p);projects.unshift(p);d.close();openProject(p.id);return}
+  cur.title=t||'Untitled film';cur.logline=l;save();d.close();render();
+ };
+ if(!isNew)d.querySelector('#pDel').onclick=()=>ask('Delete this film?',`"${cur.title}" and all its shots will be removed from this device. Export it first if you want a copy.`,'Delete',async()=>{const p=cur;await delP(p.id);d.close();await showHome();toast('Film deleted',async()=>{await putP(p);showHome()})});
+}
+
+/* scene */
+function editScene(sc,isNew){
+ const d=sheet(isNew?'New scene':'Scene',`<div class="field"><span class="lbl">Inside or outside</span>${pick('ie',['INT.','EXT.','INT./EXT.'],sc.ie)}</div>
+ <label class="field"><span class="lbl">Location</span><input type="text" id="sP" value="${esc(sc.place)}" placeholder="e.g. School corridor"></label>
+ <div class="field"><span class="lbl">Time</span>${pick('time',['DAY','NIGHT','MORNING','EVENING','GOLDEN HOUR','CONTINUOUS'],sc.time)}</div>
+ <label class="field"><span class="lbl">Notes (props, light, permissions)</span><textarea id="sN">${esc(sc.notes)}</textarea></label>
+ <div class="row">${isNew?'':`<button class="btn icon" id="sUp" aria-label="Move scene up">${ic.up}</button><button class="btn icon" id="sDn" aria-label="Move scene down">${ic.down}</button><button class="btn ghost" id="sDel" style="color:var(--rec)">Delete</button>`}<span class="sp"></span><button class="btn rec" id="sOk">${isNew?'Add scene':'Save'}</button></div>`,{small:true});
+ const tmp={ie:sc.ie,time:sc.time};
+ wirePick(d,'ie',v=>tmp.ie=v);wirePick(d,'time',v=>tmp.time=v);
+ d.querySelector('#sOk').onclick=()=>{Object.assign(sc,tmp,{place:d.querySelector('#sP').value.trim(),notes:d.querySelector('#sN').value.trim()});if(isNew)cur.scenes.push(sc);save();d.close();render();
+  if(isNew)setTimeout(()=>document.querySelector(`[data-addshot="${sc.id}"]`)?.scrollIntoView({block:'center'}),50)};
+ if(!isNew){
+  const mv=dir=>{const i=cur.scenes.indexOf(sc),j=i+dir;if(j<0||j>=cur.scenes.length)return;cur.scenes.splice(i,1);cur.scenes.splice(j,0,sc);save();render();toast(`Scene moved to ${j+1}`)};
+  d.querySelector('#sUp').onclick=()=>mv(-1);d.querySelector('#sDn').onclick=()=>mv(1);
+  d.querySelector('#sDel').onclick=()=>ask('Delete scene?',`This removes the scene and its ${sc.shots.length} shot(s).`,'Delete',()=>{const i=cur.scenes.indexOf(sc);cur.scenes.splice(i,1);save();d.close();render();toast('Scene deleted',()=>{cur.scenes.splice(i,0,sc);save();render()})});
+ }
+}
+
+/* shot */
+function editShot(sc,sh){
+ const si=cur.scenes.indexOf(sc);let hi=sc.shots.indexOf(sh);
+ const frame=()=>`<div class="fr edfr" style="${sh.img?`background-image:url(${sh.img})`:''}">${sh.img?'':'<span class="ph">No frame yet</span>'}</div>`;
+ const d=sheet(`Shot ${shotNo(si,hi)}`,`<div id="frBox">${frame()}</div>
+ <div class="row"><button class="btn" id="draw">${sh.img?'Draw over':'Sketch it'}</button><button class="btn" id="photo">Add photo</button>${sh.img?'<button class="btn ghost" id="rmImg">Remove frame</button>':''}</div>
+ <div class="field"><span class="lbl">Shot size</span>${pick('size',SIZES,sh.size)}</div>
+ <div class="field"><span class="lbl">Camera angle</span>${pick('angle',ANGLES,sh.angle)}</div>
+ <div class="field"><span class="lbl">Movement</span>${pick('move',MOVES,sh.move)}</div>
+ <label class="field"><span class="lbl">What we see</span><textarea id="hA" placeholder="Action in the frame">${esc(sh.action)}</textarea></label>
+ <div class="two"><label class="field"><span class="lbl">Dialogue</span><input type="text" id="hD" value="${esc(sh.dialogue)}"></label>
+ <label class="field"><span class="lbl">Sound / music</span><input type="text" id="hS" value="${esc(sh.sound)}"></label></div>
+ <label class="field"><span class="lbl">Lens, gear or settings</span><input type="text" id="hL" value="${esc(sh.lens)}" placeholder="e.g. 35mm, tripod, f/2.8"></label>
+ <div class="field"><span class="lbl">Who's on it</span>${cur.crew.length?`<div class="pick" id="hC">${cur.crew.map(c=>`<button type="button" data-c="${esc(c.id)}" aria-pressed="${sh.crew.includes(c.id)}">${esc(c.name)}<small>${esc(c.role)}</small></button>`).join('')}</div>`:'<p class="note">Add people in the Crew tab to tag them here.</p>'}</div>
+ <label class="toggle"><input type="checkbox" id="hX" ${sh.done?'checked':''}> In the can (shot is done)</label>
+ <div class="row"><button class="btn icon" id="hUp" aria-label="Move earlier">${ic.up}</button><button class="btn icon" id="hDn" aria-label="Move later">${ic.down}</button><button class="btn" id="hDup">Duplicate</button><button class="btn ghost" id="hDel" style="color:var(--rec)">Delete</button><span class="sp"></span><button class="btn rec" data-x>Done</button></div>`,{onClose:()=>{commit();render()}});
+ const commit=()=>{sh.action=d.querySelector('#hA').value.trim();sh.dialogue=d.querySelector('#hD').value.trim();sh.sound=d.querySelector('#hS').value.trim();sh.lens=d.querySelector('#hL').value.trim();sh.done=d.querySelector('#hX').checked;save()};
+ ['size','angle','move'].forEach(k=>wirePick(d,k,v=>{sh[k]=v;save()}));
+ d.querySelector('#hC')?.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const id=b.dataset.c;sh.crew=sh.crew.includes(id)?sh.crew.filter(x=>x!==id):[...sh.crew,id];b.setAttribute('aria-pressed',sh.crew.includes(id));save()});
+ const refreshFrame=()=>{d.querySelector('#frBox').innerHTML=frame();save()};
+ d.querySelector('#draw').onclick=()=>sketch(sh.img,url=>{sh.img=url;refreshFrame();d.querySelector('#draw').textContent='Draw over'});
+ d.querySelector('#photo').onclick=()=>pickImage(url=>{sh.img=url;refreshFrame()});
+ d.querySelector('#rmImg')?.addEventListener('click',()=>{const old=sh.img;sh.img=null;refreshFrame();toast('Frame removed',()=>{sh.img=old;refreshFrame()})});
+ const mv=dir=>{hi=sc.shots.indexOf(sh);let j=hi+dir,tgt=sc;
+  if(j<0||j>=sc.shots.length){const k=cur.scenes.indexOf(sc)+dir;if(k<0||k>=cur.scenes.length)return;tgt=cur.scenes[k];sc.shots.splice(hi,1);dir<0?tgt.shots.push(sh):tgt.shots.unshift(sh);sc=tgt}
+  else{sc.shots.splice(hi,1);sc.shots.splice(j,0,sh)}
+  save();const no=shotNo(cur.scenes.indexOf(sc),sc.shots.indexOf(sh));d.querySelector('.shd h2').textContent='Shot '+no;toast('Now shot '+no)};
+ d.querySelector('#hUp').onclick=()=>mv(-1);d.querySelector('#hDn').onclick=()=>mv(1);
+ d.querySelector('#hDup').onclick=()=>{commit();const c=Object.assign(structuredClone(sh),{id:uid(),done:false});sc.shots.splice(sc.shots.indexOf(sh)+1,0,c);save();d.close();editShot(sc,c);toast('Shot duplicated')};
+ d.querySelector('#hDel').onclick=()=>{const i=sc.shots.indexOf(sh);sc.shots.splice(i,1);save();d.close();toast('Shot deleted',()=>{sc.shots.splice(i,0,sh);save();render()})};
+}
+
+/* images */
+let imgCb=null;
+function pickImage(cb){imgCb=cb;$('#fileImg').value='';$('#fileImg').click()}
+$('#fileImg').addEventListener('change',e=>{const f=e.target.files[0];if(!f||!imgCb)return;const img=new Image(),u=URL.createObjectURL(f);
+ img.onload=()=>{const W=1280,H=720,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+  const s=Math.max(W/img.width,H/img.height);x.drawImage(img,(W-img.width*s)/2,(H-img.height*s)/2,img.width*s,img.height*s);URL.revokeObjectURL(u);imgCb(c.toDataURL('image/jpeg',.78))};
+ img.onerror=()=>toast('Could not read that image');img.src=u});
+
+/* sketch pad */
+function sketch(base,cb){
+ const d=sheet('Sketch the frame',`<div class="tools"><div class="pick" id="kT">
+ <button type="button" data-t="pen" aria-pressed="true">Pen</button><button type="button" data-t="thick" aria-pressed="false">Marker</button><button type="button" data-t="red" aria-pressed="false">Red arrow</button><button type="button" data-t="erase" aria-pressed="false">Eraser</button></div>
+ <span class="sp"></span><button class="btn sm" id="kG" aria-pressed="true">Thirds</button><button class="btn sm" id="kU">Undo</button><button class="btn sm ghost" id="kC">Clear</button></div>
+ <div class="skwrap"><canvas width="1280" height="720"></canvas><div class="thirds" id="kGrid"></div></div>
+ <p class="note">Draw with a finger or mouse. Red is for camera or actor movement.</p>
+ <div class="row"><span class="sp"></span><button class="btn" data-x>Cancel</button><button class="btn rec" id="kOk">Use this frame</button></div>`);
+ const cv=d.querySelector('canvas'),x=cv.getContext('2d');let tool='pen',hist=[],drawing=false,last=null,start=null,snap=null;
+ x.fillStyle='#fff';x.fillRect(0,0,1280,720);
+ if(base){const i=new Image();i.onload=()=>{x.drawImage(i,0,0,1280,720)};i.src=base}
+ x.lineCap=x.lineJoin='round';
+ const pos=e=>{const r=cv.getBoundingClientRect();return{x:(e.clientX-r.left)*1280/r.width,y:(e.clientY-r.top)*720/r.height}};
+ const style=()=>{x.globalCompositeOperation='source-over';if(tool==='erase'){x.strokeStyle='#fff';x.lineWidth=40}else if(tool==='thick'){x.strokeStyle='#222';x.lineWidth=16}else if(tool==='red'){x.strokeStyle='#e5322d';x.lineWidth=8}else{x.strokeStyle='#111';x.lineWidth=5}};
+ const arrow=(a,b)=>{x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke();const ang=Math.atan2(b.y-a.y,b.x-a.x),L=34;x.beginPath();x.moveTo(b.x,b.y);x.lineTo(b.x-L*Math.cos(ang-.45),b.y-L*Math.sin(ang-.45));x.moveTo(b.x,b.y);x.lineTo(b.x-L*Math.cos(ang+.45),b.y-L*Math.sin(ang+.45));x.stroke()};
+ cv.addEventListener('pointerdown',e=>{e.preventDefault();cv.setPointerCapture(e.pointerId);hist.push(x.getImageData(0,0,1280,720));if(hist.length>25)hist.shift();drawing=true;last=start=pos(e);style();
+  if(tool==='red')snap=x.getImageData(0,0,1280,720);else{x.beginPath();x.arc(last.x,last.y,x.lineWidth/2,0,7);x.fillStyle=x.strokeStyle;x.fill()}});
+ cv.addEventListener('pointermove',e=>{if(!drawing)return;const p=pos(e);
+  if(tool==='red'){x.putImageData(snap,0,0);style();arrow(start,p)}else{x.beginPath();x.moveTo(last.x,last.y);x.lineTo(p.x,p.y);x.stroke()}last=p});
+ const end=()=>{drawing=false};cv.addEventListener('pointerup',end);cv.addEventListener('pointercancel',end);
+ d.querySelector('#kT').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;tool=b.dataset.t;d.querySelectorAll('#kT button').forEach(z=>z.setAttribute('aria-pressed',z===b))});
+ d.querySelector('#kG').onclick=e=>{const g=d.querySelector('#kGrid');g.classList.toggle('hide');e.currentTarget.setAttribute('aria-pressed',!g.classList.contains('hide'))};
+ d.querySelector('#kU').onclick=()=>{const h=hist.pop();if(h)x.putImageData(h,0,0)};
+ d.querySelector('#kC').onclick=()=>{hist.push(x.getImageData(0,0,1280,720));x.fillStyle='#fff';x.fillRect(0,0,1280,720)};
+ d.querySelector('#kOk').onclick=()=>{cb(cv.toDataURL('image/jpeg',.82));d.close()};
+}
+
+/* crew */
+function editCrew(c,isNew){
+ const d=sheet(isNew?'Add person':'Crew member',`<label class="field"><span class="lbl">Name</span><input type="text" id="cN" value="${esc(c.name)}"></label>
+ <div class="field"><span class="lbl">Job</span>${pick('role',ROLES,c.role)}</div>
+ <div class="row">${isNew?'':'<button class="btn ghost" id="cDel" style="color:var(--rec)">Remove</button>'}<span class="sp"></span><button class="btn rec" id="cOk">${isNew?'Add':'Save'}</button></div>`,{small:true});
+ let role=c.role;wirePick(d,'role',v=>role=v);
+ d.querySelector('#cOk').onclick=()=>{const n=d.querySelector('#cN').value.trim();if(!n){d.querySelector('#cN').focus();return}c.name=n;c.role=role;if(isNew)cur.crew.push(c);save();d.close();render()};
+ d.querySelector('#cDel')?.addEventListener('click',()=>{cur.crew=cur.crew.filter(z=>z!==c);cur.scenes.forEach(s=>s.shots.forEach(h=>h.crew=h.crew.filter(i=>i!==c.id)));save();d.close();render()});
+}
+
+/* ---------- share, export, print ---------- */
+const fileName=()=>(cur.title||'film').replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'-').toLowerCase()+'.slate.json';
+function asText(){
+ let t=`${cur.title.toUpperCase()}\n${cur.logline?cur.logline+'\n':''}\n`;
+ cur.scenes.forEach((sc,si)=>{t+=`SCENE ${si+1}: ${heading(sc)}\n`;if(sc.notes)t+=`  Notes: ${sc.notes}\n`;
+  sc.shots.forEach((sh,hi)=>{const w=sh.crew.map(crewName).filter(Boolean).join(', ');t+=`${sh.done?'[x]':'[ ]'} ${shotNo(si,hi)}  ${sh.size} · ${sh.angle} · ${sh.move}${sh.lens?' · '+sh.lens:''}${sh.action?'\n     '+sh.action:''}${sh.dialogue?'\n     "'+sh.dialogue+'"':''}${sh.sound?'\n     Sound: '+sh.sound:''}${w?'\n     Who: '+w:''}\n`});t+='\n'});
+ return t.trim()+'\n\nMade with Slate';
+}
+function download(name,blob){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500)}
+async function shareFile(){
+ const blob=new Blob([JSON.stringify({slate:1,project:cur})],{type:'application/json'}),name=fileName();
+ try{const f=new File([blob],name,{type:'application/json'});if(navigator.canShare?.({files:[f]})){await navigator.share({files:[f],title:cur.title,text:'Open this in Slate to see the storyboard.'});return}}catch(e){if(e.name==='AbortError')return}
+ download(name,blob);toast('Saved '+name+'. Send it to your crew.');
+}
+async function copyText(){try{await navigator.clipboard.writeText(asText());toast('Shot list copied. Paste it in your group chat.')}catch(e){const d=sheet('Copy this',`<textarea style="min-height:50vh" readonly>${esc(asText())}</textarea>`);d.querySelector('textarea').select()}}
+function shareMenu(){
+ const d=sheet('Share with your crew',`<div class="menu">
+ <button class="btn" id="mF">Send the film file<span class="sp"></span><span class="lbl">crew opens it in Slate</span></button>
+ <button class="btn" id="mT">Copy shot list as text<span class="sp"></span><span class="lbl">for the group chat</span></button>
+ <button class="btn" id="mP">Print or save as PDF<span class="sp"></span><span class="lbl">for the shoot day</span></button></div>
+ <p class="note">Slate keeps films on this device only. To work together, one person edits and sends the newest file to everyone else.</p>`,{small:true});
+ d.querySelector('#mF').onclick=()=>{d.close();shareFile()};d.querySelector('#mT').onclick=()=>{d.close();copyText()};d.querySelector('#mP').onclick=()=>{d.close();printMenu()};
+}
+function printMenu(){
+ const d=sheet('Print or save as PDF',`<div class="menu"><button class="btn" id="pS">Shot list<span class="sp"></span><span class="lbl">table, ticks for the set</span></button><button class="btn" id="pB">Storyboard<span class="sp"></span><span class="lbl">frames, 6 per page</span></button></div>
+ <p class="note">In the print window, pick "Save as PDF" to get a file.</p>`,{small:true});
+ const go=k=>{d.close();buildPrint(k);setTimeout(()=>{try{window.print()}catch(e){toast('Printing is blocked here. Open Slate in its own tab.')}},60)};
+ d.querySelector('#pS').onclick=()=>go('list');d.querySelector('#pB').onclick=()=>go('board');
+}
+function buildPrint(k){
+ const head=`<h1>${esc(cur.title)}</h1><p class="sub">${esc(cur.logline)}${cur.crew.length?(cur.logline?' · ':'')+'Crew: '+cur.crew.map(c=>esc(c.name)+' ('+esc(c.role)+')').join(', '):''}</p>`;
+ if(k==='list'){$('#print').innerHTML=head+`<table><thead><tr><th>Done</th><th>#</th><th>Size</th><th>Angle</th><th>Move</th><th>What we see</th><th>Sound</th><th>Who</th></tr></thead><tbody>`+
+  cur.scenes.map((sc,si)=>`<tr class="sc"><td colspan="8">${si+1}. ${esc(heading(sc))}${sc.notes?' · '+esc(sc.notes):''}</td></tr>`+sc.shots.map((sh,hi)=>`<tr><td>${sh.done?'&#10003;':'&#9633;'}</td><td><b>${shotNo(si,hi)}</b></td><td>${esc(sh.size)}</td><td>${esc(sh.angle)}</td><td>${esc(sh.move)}${sh.lens?', '+esc(sh.lens):''}</td><td>${esc(sh.action)}${sh.dialogue?'<br><i>'+esc(sh.dialogue)+'</i>':''}</td><td>${esc(sh.sound)}</td><td>${esc(sh.crew.map(crewName).filter(Boolean).join(', '))}</td></tr>`).join('')).join('')+'</tbody></table>'}
+ else $('#print').innerHTML=head+'<div class="pboard">'+cur.scenes.map((sc,si)=>`<div class="psc">${si+1}. ${esc(heading(sc))}</div>`+sc.shots.map((sh,hi)=>`<div class="pcell"><div class="pf" style="${sh.img?`background-image:url(${sh.img})`:''}"></div><b>${shotNo(si,hi)}</b> ${esc(sh.size)} · ${esc(sh.angle)} · ${esc(sh.move)}<p>${esc(sh.action)}${sh.dialogue?' <i>'+esc(sh.dialogue)+'</i>':''}</p></div>`).join('')).join('')+'</div>';
+}
+function moreMenu(){
+ const d=sheet('More',`<div class="menu"><button class="btn" id="oE">Film details</button><button class="btn" id="oD">Duplicate film</button><button class="btn" id="oS">Save a backup file</button><button class="btn" id="oI">Open a film file</button></div>`,{small:true});
+ d.querySelector('#oE').onclick=()=>{d.close();editProject(false)};
+ d.querySelector('#oD').onclick=async()=>{d.close();const p=structuredClone(cur);p.id=uid();p.title+=' (copy)';await putP(p);projects.unshift(p);openProject(p.id);toast('Copy made')};
+ d.querySelector('#oS').onclick=()=>{d.close();download(fileName(),new Blob([JSON.stringify({slate:1,project:cur})],{type:'application/json'}))};
+ d.querySelector('#oI').onclick=()=>{d.close();$('#fileProj').click()};
+}
+$('#fileProj').addEventListener('change',async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
+ try{const j=JSON.parse(await f.text()),p=j.project;if(!p||!Array.isArray(p.scenes))throw 0;
+  const ok=async()=>{await putP(p);projects=await allP();openProject(p.id);toast('Opened '+p.title)};
+  const have=(await allP()).find(x=>x.id===p.id);
+  if(have)ask('Replace your version?',`You already have "${have.title}". Replace it with the version from this file?`,'Replace',ok);else ok();
+ }catch(err){toast('That file is not a Slate film')}});
+
+/* ---------- events ---------- */
+document.addEventListener('click',e=>{
+ const t=e.target.closest('button,tr.click,[data-open]');if(!t)return;
+ if(t.id==='home'||t.id==='back')return showHome();
+ if(t.id==='newP')return editProject(true);
+ if(t.id==='tImport')return $('#fileProj').click();
+ if(t.id==='tShare')return shareMenu();
+ if(t.id==='tPrint')return printMenu();
+ if(t.id==='tMore')return moreMenu();
+ if(t.id==='editP')return editProject(false);
+ if(t.id==='addScene')return editScene(newScene(),true);
+ if(t.id==='addCrew')return editCrew({id:uid(),name:'',role:'Camera'},true);
+ if(t.dataset.open)return openProject(t.dataset.open);
+ if(t.dataset.view){view=t.dataset.view;pref.set('view',view);return render()}
+ if(t.dataset.escene)return editScene(cur.scenes.find(s=>s.id===t.dataset.escene),false);
+ if(t.dataset.ecrew)return editCrew(cur.crew.find(c=>c.id===t.dataset.ecrew),false);
+ if(t.dataset.addshot){const sc=cur.scenes.find(s=>s.id===t.dataset.addshot),prev=sc.shots[sc.shots.length-1],sh=newShot();if(prev){sh.crew=[...prev.crew]}sc.shots.push(sh);save();render();return editShot(sc,sh)}
+ if(t.dataset.shot&&!e.target.matches('input')){const sc=cur.scenes.find(s=>s.id===t.dataset.scene);return editShot(sc,sc.shots.find(h=>h.id===t.dataset.shot))}
+});
+document.addEventListener('change',e=>{
+ if(e.target.id==='who'){who=e.target.value;render()}
+ if(e.target.dataset.done){const sh=cur.scenes.flatMap(s=>s.shots).find(h=>h.id===e.target.dataset.done);sh.done=e.target.checked;save();render()}
+});
+addEventListener('afterprint',()=>{$('#print').innerHTML=''});
+
+/* ---------- start ---------- */
+(async()=>{
+ await openDB();
+ projects=await allP();
+ if(!projects.length&&!pref.get('seeded')){const s=sample();await putP(s);projects=[s];pref.set('seeded','1')}
+ const h=location.hash.replace('#film-','');
+ if(h&&projects.some(p=>p.id===h))openProject(h);else showHome();
+ if('serviceWorker' in navigator&&location.protocol==='https:')navigator.serviceWorker.register('sw.js').catch(()=>{});
+})();
+}
+</script>
+</body>
+</html>
