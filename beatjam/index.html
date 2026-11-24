@@ -89,7 +89,7 @@ input[type=range]{accent-color:var(--acc2);width:110px}
 .bpm{display:flex;align-items:center;gap:4px;background:var(--panel);border-radius:12px;padding:4px}
 .bpm button{width:34px;height:40px;border-radius:9px;background:var(--panel2);font-size:18px;font-weight:800}
 .bpm div{min-width:52px;text-align:center;line-height:1.05}
-.bpm div b{font-size:19px;font-variant-numeric:tabular-nums}
+.bpm div input{width:52px;background:transparent;border:0;border-bottom:1px dashed transparent;text-align:center;font-size:19px;font-weight:800;font-variant-numeric:tabular-nums;padding:0;outline:none;-moz-appearance:textfield;appearance:textfield}.bpm div input:focus{border-bottom-color:var(--acc2)}.bpm div input::-webkit-outer-spin-button,.bpm div input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
 .bpm div span{display:block;font-size:9px;letter-spacing:.18em;color:var(--dim)}
 #pass{flex:1;height:52px;border-radius:14px;background:var(--text);color:#111;font-weight:900;font-size:15px;letter-spacing:.02em}
 
@@ -152,7 +152,7 @@ input[type=range]{accent-color:var(--acc2);width:110px}
 
 <div id="bar"><div class="in">
   <button id="play" aria-label="Play">▶</button>
-  <div class="bpm"><button id="bpmDown" aria-label="Slower">−</button><div><b id="bpmVal">90</b><span>BPM</span></div><button id="bpmUp" aria-label="Faster">+</button></div>
+  <div class="bpm"><button id="bpmDown" aria-label="Slower">−</button><div><input id="bpmVal" type="number" inputmode="numeric" min="60" max="180" value="90" aria-label="BPM"><span>BPM</span></div><button id="bpmUp" aria-label="Faster">+</button></div>
   <button id="pass">Pass it on ↗</button>
 </div></div>
 
@@ -423,7 +423,7 @@ function drawMini(cv,l){
   for(let r=0;r<ROWS;r++)for(let s=0;s<16;s++)if(l.r[r]>>s&1)x.fillRect(s*cw+.5,(7-r)*rh+.5,cw-1,rh-1);
 }
 function renderTop(){
-  $('title').value=jam.n;$('bpmVal').textContent=jam.b;$('swing').value=jam.w;$('key').value=jam.k;$('scale').value=jam.s;
+  $('title').value=jam.n;$('bpmVal').value=jam.b;$('swing').value=jam.w;$('key').value=jam.k;$('scale').value=jam.s;
 }
 function renderLayers(){
   const box=$('layers');box.innerHTML='';
@@ -578,7 +578,12 @@ function init(){
   $('key').onchange=e=>{jam.k=+e.target.value;save();renderEditor()};
   $('scale').onchange=e=>{jam.s=+e.target.value;save();renderEditor()};
   $('swing').oninput=e=>{jam.w=+e.target.value;save()};
-  const bpm=d=>{jam.b=Math.max(60,Math.min(180,jam.b+d));$('bpmVal').textContent=jam.b;if(G)G.dly.delayTime.value=stepDur()*3;save()};
+  const setBpm=v=>{jam.b=Math.max(60,Math.min(180,Math.round(v)||jam.b));$('bpmVal').value=jam.b;if(G)G.dly.delayTime.value=stepDur()*3;save()};
+  const bpm=d=>setBpm(jam.b+d);
+  const bi=$('bpmVal');bi.onfocus=()=>bi.select();
+  bi.onchange=()=>{const v=+bi.value;setBpm(v);if(v&&v!==jam.b)toast('BPM goes from 60 to 180')};
+  bi.onkeydown=e=>{if(e.key==='Enter')bi.blur()};
+  bi.onblur=()=>{if(+bi.value!==jam.b)setBpm(+bi.value)};
   let hold;const rep=(btn,d)=>{btn.onpointerdown=()=>{bpm(d);hold=setTimeout(function f(){bpm(d);hold=setTimeout(f,70)},400)};btn.onpointerup=btn.onpointerleave=btn.onpointercancel=()=>clearTimeout(hold)};
   rep($('bpmDown'),-1);rep($('bpmUp'),1);
   $('play').onclick=()=>playing?stop():start();
